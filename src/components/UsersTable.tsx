@@ -11,6 +11,7 @@ import Paper from '@material-ui/core/Paper';
 import { UserContext, Actions, User } from '../context/UserContext';
 import Modal from './Modal';
 import EditForm from './EditForm';
+import Dialog from './Dialog';
 
 const StyledTableCell = withStyles((theme: Theme) =>
   createStyles({
@@ -44,6 +45,7 @@ function UsersTable() {
   const classes = useStyles();
   const { state, dispatch } = useContext(UserContext);
   const [currentlyEdited, setCurrentlyEdited] = useState<User>();
+  const [userIdToRemove, setUserIdToRemove] = useState<string>();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   function closeModal() {
@@ -55,8 +57,13 @@ function UsersTable() {
     setCurrentlyEdited(user);
   }
 
+  function handleRemoveClick(userId: string) {
+    setUserIdToRemove(userId);
+  }
+
   function handleRemove(userId: string) {
     dispatch({ type: Actions.removeUser, payload: userId });
+    setUserIdToRemove('');
   }
 
   return (
@@ -89,7 +96,7 @@ function UsersTable() {
                 <StyledTableCell>{user.email}</StyledTableCell>
                 <StyledTableCell>
                   <span onClick={() => handleEdit(user)}>Edit</span> |{' '}
-                  <span onClick={() => handleRemove(user.login.uuid)}>Remove</span>
+                  <span onClick={() => handleRemoveClick(user.login.uuid)}>Remove</span>
                 </StyledTableCell>
               </StyledTableRow>
             ))}
@@ -100,6 +107,13 @@ function UsersTable() {
         <Modal isOpen={isModalOpen} handleClose={closeModal}>
           <EditForm onSubmit={closeModal} data={currentlyEdited} />
         </Modal>
+      )}
+      {userIdToRemove && (
+        <Dialog
+          isOpen={!!userIdToRemove}
+          onConfirm={() => handleRemove(userIdToRemove)}
+          onDecline={() => setUserIdToRemove('')}
+        />
       )}
     </div>
   );

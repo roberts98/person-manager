@@ -85,6 +85,8 @@ function EditForm({ data, onSubmit }: { data: User; onSubmit: () => void }) {
         <TextField
           error={!isValid}
           name="email"
+          type="email"
+          required
           onChange={handleChange}
           label="Email"
           value={formData.email}
