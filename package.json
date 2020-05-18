@@ -1,6 +1,7 @@
 {
   "name": "person-manager",
   "version": "0.1.0",
+  "homepage": "https://roberts98.github.io/person-manager",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.9.14",
@@ -8,10 +9,10 @@
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
     "axios": "^0.19.2",
+    "gh-pages": "^2.2.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
-    "serve": "^11.3.0",
     "typescript": "~3.7.2"
   },
   "scripts": {
@@ -19,7 +20,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "preview": "yarn build && serve build"
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": "react-app"

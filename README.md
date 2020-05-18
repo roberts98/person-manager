@@ -2,7 +2,7 @@
 
 ## Live demo
 
-[Click here](https://roberts98.github.io/person-manager)
+[Click here](https://roberts98.github.io/person-manager/)
 
 ## Preview locally
 
@@ -10,24 +10,22 @@ Run these commands
 
 ```
 yarn
-yarn run preview
+yarn start
 ```
 
-then open:
+If you don't have `yarn` installed, run
 
 ```
-localhost:5000
-```
 
-If you don't have yarn installed, run
-
-```
 npm i -g yarn
+
 ```
 
 ## Development
 
 ```
+
 yarn
 yarn start
+
 ```
