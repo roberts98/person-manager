@@ -1,9 +1,5 @@
 # Proje[c]ts - person manager
 
-## Live demo
-
-[Click here](https://roberts98.github.io/person-manager/)
-
 ## Preview locally
 
 Run these commands

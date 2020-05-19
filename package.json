@@ -9,14 +9,18 @@
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
     "axios": "^0.19.2",
+    "concurrently": "^5.2.0",
     "gh-pages": "^2.2.0",
+    "json-server": "^0.16.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
     "typescript": "~3.7.2"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start:client": "react-scripts start",
+    "start:api": "json-server https://randomuser.me/api?results=10&inc=name,location,email,login,picture",
+    "start": "concurrently --kill-others-on-fail \"yarn start:client\" \"yarn start:api\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
@@ -37,5 +41,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "proxy": "http://localhost:3000"
 }

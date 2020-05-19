@@ -136,7 +136,7 @@ function UserProvider({ children }: { children: React.ReactNode }) {
       try {
         dispatch({ type: Actions.setLoading, payload: true });
         const response = await getUsers();
-        const users = response.data.results as User[];
+        const users = response.data;
         dispatch({ type: Actions.addUsers, payload: users });
         dispatch({ type: Actions.setLoading, payload: false });
       } catch (error) {
