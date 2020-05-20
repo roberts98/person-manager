@@ -1,7 +1,7 @@
 {
   "name": "person-manager",
   "version": "0.1.0",
-  "homepage": "https://roberts98.github.io/person-manager",
+  "homepage": "./",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.9.14",
@@ -18,14 +18,14 @@
     "typescript": "~3.7.2"
   },
   "scripts": {
+    "preinstall": "cp db.example.json db.json",
     "start:client": "react-scripts start",
-    "start:api": "json-server https://randomuser.me/api?results=10&inc=name,location,email,login,picture",
-    "start": "concurrently --kill-others-on-fail \"yarn start:client\" \"yarn start:api\"",
+    "start:api": "nodemon api/server.js",
+    "start": "concurrently \"yarn start:api\" \"yarn start:client\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "preview": "yarn build && nodemon api/server.js"
   },
   "eslintConfig": {
     "extends": "react-app"

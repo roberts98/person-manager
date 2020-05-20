@@ -6,8 +6,10 @@ Run these commands
 
 ```
 yarn
-yarn start
+yarn preview
 ```
+
+and open `localhost:3000/app`
 
 If you don't have `yarn` installed, run
 

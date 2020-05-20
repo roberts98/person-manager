@@ -12,6 +12,7 @@ import { UserContext, Actions, User } from '../context/UserContext';
 import Modal from './Modal';
 import EditForm from './EditForm';
 import Dialog from './Dialog';
+import { deleteUser } from '../services/user.service';
 
 const StyledTableCell = withStyles((theme: Theme) =>
   createStyles({
@@ -45,7 +46,7 @@ function UsersTable() {
   const classes = useStyles();
   const { state, dispatch } = useContext(UserContext);
   const [currentlyEdited, setCurrentlyEdited] = useState<User>();
-  const [userIdToRemove, setUserIdToRemove] = useState<string>();
+  const [userIdToRemove, setUserIdToRemove] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   function closeModal() {
@@ -57,13 +58,18 @@ function UsersTable() {
     setCurrentlyEdited(user);
   }
 
-  function handleRemoveClick(userId: string) {
+  function handleRemoveClick(userId: number) {
     setUserIdToRemove(userId);
   }
 
-  function handleRemove(userId: string) {
-    dispatch({ type: Actions.removeUser, payload: userId });
-    setUserIdToRemove('');
+  async function handleRemove(userId: number) {
+    try {
+      await deleteUser(userId);
+      dispatch({ type: Actions.removeUser, payload: userId });
+      setUserIdToRemove(null);
+    } catch (error) {
+      alert('Error while removing the user');
+    }
   }
 
   return (
@@ -83,7 +89,7 @@ function UsersTable() {
           </TableHead>
           <TableBody>
             {state.users.map((user) => (
-              <StyledTableRow key={user.login.uuid}>
+              <StyledTableRow key={user.id}>
                 <StyledTableCell component="th" scope="row">
                   {user.name.first}
                 </StyledTableCell>
@@ -96,7 +102,7 @@ function UsersTable() {
                 <StyledTableCell>{user.email}</StyledTableCell>
                 <StyledTableCell>
                   <span onClick={() => handleEdit(user)}>Edit</span> |{' '}
-                  <span onClick={() => handleRemoveClick(user.login.uuid)}>Remove</span>
+                  <span onClick={() => handleRemoveClick(user.id)}>Remove</span>
                 </StyledTableCell>
               </StyledTableRow>
             ))}
@@ -108,11 +114,11 @@ function UsersTable() {
           <EditForm onSubmit={closeModal} data={currentlyEdited} />
         </Modal>
       )}
-      {userIdToRemove && (
+      {userIdToRemove !== null && (
         <Dialog
-          isOpen={!!userIdToRemove}
+          isOpen={userIdToRemove !== null}
           onConfirm={() => handleRemove(userIdToRemove)}
-          onDecline={() => setUserIdToRemove('')}
+          onDecline={() => setUserIdToRemove(null)}
         />
       )}
     </div>

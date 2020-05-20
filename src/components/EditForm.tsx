@@ -5,6 +5,7 @@ import Button from '@material-ui/core/Button';
 import FormGroup from '@material-ui/core/FormGroup';
 
 import { User, UserContext, Actions } from '../context/UserContext';
+import { editUser } from '../services/user.service';
 
 function EditForm({ data, onSubmit }: { data: User; onSubmit: () => void }) {
   const { dispatch } = useContext(UserContext);
@@ -26,7 +27,7 @@ function EditForm({ data, onSubmit }: { data: User; onSubmit: () => void }) {
     }));
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     if (!formData.email) {
@@ -34,22 +35,26 @@ function EditForm({ data, onSubmit }: { data: User; onSubmit: () => void }) {
     }
 
     const payload = {
-      id: data.login.uuid,
-      data: {
-        name: {
-          first: formData.firstName,
-          last: formData.lastName,
-        },
-        location: {
-          country: formData.country,
-          city: formData.city,
-        },
-        email: formData.email,
+      id: data.id,
+      name: {
+        first: formData.firstName,
+        last: formData.lastName,
       },
+      location: {
+        country: formData.country,
+        city: formData.city,
+      },
+      email: formData.email,
     };
 
-    dispatch({ type: Actions.editUser, payload });
-    onSubmit();
+    try {
+      await editUser(data.id, payload);
+
+      dispatch({ type: Actions.editUser, payload });
+      onSubmit();
+    } catch (error) {
+      alert('Error while editing the user');
+    }
   }
 
   return (

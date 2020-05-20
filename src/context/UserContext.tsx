@@ -1,8 +1,9 @@
 import React, { createContext, useReducer, useEffect } from 'react';
 
-import { getUsers } from '../services/user.service';
+import { getUsers, seedDb } from '../services/user.service';
 
 export interface User {
+  id: number;
   name: {
     first: string;
     last: string;
@@ -14,9 +15,6 @@ export interface User {
   email: string;
   picture: {
     thumbnail: string;
-  };
-  login: {
-    uuid: string;
   };
 }
 
@@ -47,15 +45,12 @@ type AddUsersAction = {
 
 type EditUserAction = {
   type: Actions.editUser;
-  payload: {
-    id: string;
-    data: EditUserObject;
-  };
+  payload: EditUserObject;
 };
 
 type RemoveUserAction = {
   type: Actions.removeUser;
-  payload: string;
+  payload: number;
 };
 
 type Action =
@@ -72,7 +67,7 @@ type State = {
 };
 
 const initialState = {
-  users: (JSON.parse(window.localStorage.getItem('users')!) as User[]) || [],
+  users: [],
   isLoading: false,
   error: '',
 };
@@ -81,10 +76,6 @@ const UserContext = createContext<{ state: State; dispatch: Dispatch }>({
   state: initialState,
   dispatch: () => null,
 });
-
-function updateUsersLs(users: User[]): void {
-  window.localStorage.setItem('users', JSON.stringify(users));
-}
 
 function userReducer(state: State, action: Action): State {
   switch (action.type) {
@@ -95,8 +86,6 @@ function userReducer(state: State, action: Action): State {
       };
 
     case Actions.addUsers:
-      updateUsersLs(action.payload);
-
       return {
         ...state,
         users: action.payload,
@@ -104,22 +93,20 @@ function userReducer(state: State, action: Action): State {
 
     case Actions.editUser:
       const updatedUsers = state.users.map((user) => {
-        if (user.login.uuid === action.payload.id) {
+        if (user.id === action.payload.id) {
           return {
             ...user,
-            ...action.payload.data,
+            ...action.payload,
           };
         } else {
           return user;
         }
       });
-      updateUsersLs(updatedUsers);
 
       return { ...state, users: updatedUsers };
 
     case Actions.removeUser:
-      const newUsers = state.users.filter((user) => user.login.uuid !== action.payload);
-      updateUsersLs(newUsers);
+      const newUsers = state.users.filter((user) => user.id !== action.payload);
 
       return { ...state, users: newUsers };
 
@@ -136,9 +123,21 @@ function UserProvider({ children }: { children: React.ReactNode }) {
       try {
         dispatch({ type: Actions.setLoading, payload: true });
         const response = await getUsers();
-        const users = response.data;
-        dispatch({ type: Actions.addUsers, payload: users });
-        dispatch({ type: Actions.setLoading, payload: false });
+
+        if (response.data) {
+          const users = response.data;
+
+          if (users.length === 0) {
+            dispatch({ type: Actions.setLoading, payload: true });
+            const response = await seedDb();
+            const { users } = response.data;
+            dispatch({ type: Actions.addUsers, payload: users });
+            dispatch({ type: Actions.setLoading, payload: false });
+          } else {
+            dispatch({ type: Actions.addUsers, payload: users });
+            dispatch({ type: Actions.setLoading, payload: false });
+          }
+        }
       } catch (error) {
         dispatch({ type: Actions.setLoading, payload: false });
         dispatch({ type: Actions.setError, payload: 'Something went wrong' });
